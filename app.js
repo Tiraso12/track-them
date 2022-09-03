@@ -15,3 +15,13 @@
 //ADD EMPLOYEE: prompt to enter first name, last name, role, and manager, that employee is added to db
 
 //UPDATE AN EMPLOYEE ROLE: prompt to select an employee to update their new role and this information is updated in the db
+
+const sql = require('mysql2'); 
+const db = require('./db/connection');
+
+db.connect(err =>{
+    if (err) throw err;
+    console.log(('database connected'));
+});
+
+
