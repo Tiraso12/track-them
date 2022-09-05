@@ -16,12 +16,43 @@
 
 //UPDATE AN EMPLOYEE ROLE: prompt to select an employee to update their new role and this information is updated in the db
 
-const sql = require('mysql2'); 
+const sql = require('mysql2');
 const db = require('./db/connection');
+const inquirer = require('inquirer');
+const cTable = require('console.table');
 
-db.connect(err =>{
+db.connect(err => {
     if (err) throw err;
     console.log(('database connected'));
 });
 
 
+//start application function
+const start = answers => {
+    return inquirer.prompt([
+        {
+            type: 'list',
+            name: 'options',
+            message: 'select an option',
+            choices: ['ALL DEPARTMENTS', 'ALL ROLES', 'ALL EMPLOYESS', 'ADD DEPARTMENT', 'ADD ROLE', 'ADD EMPLOYEE', 'UPDATE EMPLOYEE ROLE']
+        },
+    ])
+        .then(answers => {
+            console.log(answers.options);
+            switch (answers.options) {
+                case "ALL DEPARTMENTS":
+                    db.query(`SELECT * FROM department`, (err, res)=>{
+                        if (err) throw err;
+                        console.table(res);
+                    })
+                    break;
+                case "ALL ROLES":
+                    console.log('Options is all roles');
+                    break;
+
+        }
+        })
+};
+
+
+start()
