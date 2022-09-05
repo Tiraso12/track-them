@@ -1,6 +1,3 @@
-//SEUDO
-
-//PROMP WITH OPTIONS FOR : ALL DEPARTMENTS, ALL ROLES, ALL EMPLOYEES,  ADD DEPARTMENT, ADD ROLE, ADD EMPLOYEE, AND UPDATE AN EMPLOYEE ROLE
 
 //ALL DEPARTMENTS : department names, and department ids
 
@@ -21,6 +18,7 @@ const db = require('./db/connection');
 const inquirer = require('inquirer');
 const cTable = require('console.table');
 
+// connects to data base
 db.connect(err => {
     if (err) throw err;
     console.log(('database connected'));
@@ -29,7 +27,7 @@ db.connect(err => {
 
 //start application function
 const start = answers => {
-    return inquirer.prompt([
+    inquirer.prompt([
         {
             type: 'list',
             name: 'options',
@@ -106,6 +104,29 @@ function allEmployees() {
         console.table(res);
     });
     start();
+};
+
+function addDeparment(){
+    inquirer.prompt([
+        {
+            type: 'input',
+            name:'depName',
+            message:'What is the name of the deparment?',
+        },
+    ])
+    .then(answers=>{
+       
+        const insert = "INSERT INTO department(name) VALUES ?" ;
+        const value = [[answers.depName]];
+        
+
+        db.query(insert,[value], (err,res)=>{
+            if (err) throw err;
+            console.log (res);
+            allDepartments();
+        })
+    });
+    
 }
 
 
