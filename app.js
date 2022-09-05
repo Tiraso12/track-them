@@ -62,31 +62,48 @@ const start = answers => {
                     updateEmployee();
                     break;
 
-        }
+            }
         })
 };
 
-function allDepartments (){
-    db.query(`SELECT * FROM department`, (err, res)=>{
+function allDepartments() {
+    db.query(`SELECT * FROM department`, (err, res) => {
         if (err) throw err;
+        console.log(
+            `====================
+                        EMPLOYEES TABLE
+                     ====================
+            
+            `);
         console.table(res);
     });
     start();
 };
 
-function allRoles(){
-    db.query(`SELECT * FROM roles`,(err,res)=>{
-        if(err) throw err;
+function allRoles() {
+    db.query(`SELECT * FROM roles`, (err, res) => {
+        if (err) throw err;
+        console.log(
+            `====================
+                        EMPLOYEES TABLE
+                     ====================
+            
+            `);
         console.table(res);
     })
     start();
 };
 
 function allEmployees() {
-    db.query(`SELECT * FROM employee`, (err,res)=>{
-        if(err) throw err;
-        console.log('====================');
-        console.table(res)
+    db.query(`SELECT * FROM employee`, (err, res) => {
+        if (err) throw err;
+        console.log(
+            `====================
+                        EMPLOYEES TABLE
+                     ====================
+            
+            `);
+        console.table(res);
     });
     start();
 }

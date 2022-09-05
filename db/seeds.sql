@@ -8,11 +8,11 @@ VALUES
 INSERT INTO roles(title,salary,department_id)
 VALUES
 ('manager',80.000,1),
-('assistant_manager',60.000,2),
-('supervisor', 42.000,3),
-('assistant_supervisor',40.000, 4);
+('assistant_manager',60.000,1),
+('supervisor', 42.000,1),
+('assistant_supervisor',40.000, 1);
 
-INSERT INTO employee(first_name, last_name, role_id,manager_id)
+INSERT INTO employee(first_name, last_name, role_id, manager_id)
 VALUES
 ('Ricardo','Braga',1,1),
 ('Ramon','Braga',4,3),
