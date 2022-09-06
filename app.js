@@ -93,7 +93,12 @@ function allRoles() {
 };
 
 function allEmployees() {
-    db.query(`SELECT * FROM employee`, (err, res) => {
+    db.query(`SELECT employee.id, employee.first_name, employee.last_name, roles.title,roles.salary, department.name
+     FROM employee
+     LEFT JOIN roles
+     ON employee.role_id = roles.id
+     LEFT JOIN department
+     ON roles.department_id = department.id;`, (err, res) => {
         if (err) throw err;
         console.log(
             `====================
