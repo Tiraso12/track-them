@@ -1,7 +1,6 @@
 
 
 
-//ADD EMPLOYEE: prompt to enter first name, last name, role, and manager, that employee is added to db
 
 //UPDATE AN EMPLOYEE ROLE: prompt to select an employee to update their new role and this information is updated in the db
 
@@ -70,9 +69,9 @@ function allDepartments() {
 //ALL ROLES: job title, role id, the department that role belongs to, and the salary for that role.
 function allRoles() {
     db.query(`SELECT roles.id, roles.title, roles.salary, department.name
-    FROM roles
-    LEFT JOIN department
-    ON roles.department_id = department.id`, (err, res) => {
+                                FROM roles
+                                LEFT JOIN department
+                                ON roles.department_id = department.id`, (err, res) => {
         if (err) throw err;
         console.log('\n');
         console.log('VIEW ALL ROLES');
@@ -83,10 +82,10 @@ function allRoles() {
 };
 //ALL EMPLOYEES: employee ids, first names, last names, job titles, departments, salaries, and managers that the emplyees report to.
 function allEmployees() {
-    const sql = `SELECT employee.employee_id, employee.first_name, employee.last_name, roles.title, roles.salary, department.name 
+    const sql = `SELECT employee.id, employee.first_name, employee.last_name, roles.title, roles.salary, department.name 
     FROM employee 
     LEFT JOIN roles 
-    ON roles.id = employee.employee_id
+    ON employee.role_id = roles.id
     LEFT JOIN department
     ON department.id = roles.department_id;`
     db.query(sql, (err, res) => {
@@ -128,10 +127,11 @@ function addRole() {
     db.query(sql, (err, res) => {
         if (err) throw err;
         const departmentArray = []
-        const storeRes= res;
+        const storeRes = res;
+        console.log(res);
 
         res.forEach((department) => { departmentArray.push(department.name) });
-        
+
         inquirer.prompt([
             {
                 type: 'input',
@@ -153,25 +153,75 @@ function addRole() {
             console.log(storeRes);
             console.log(data);
             let departmentId;
-            storeRes.forEach((index)=>{
-                if (index.name === data.departmentForRole){
+            storeRes.forEach((index) => {
+                if (index.name === data.departmentForRole) {
                     departmentId = index.id;
                 };
             })
-            const values ={
-                title : data.nameOfRole,
-                salary : data.salary,
+            const values = {
+                title: data.nameOfRole,
+                salary: data.salary,
                 department_id: departmentId
             }
 
             const sql = `INSERT INTO roles SET ?`;
-            db.query(sql,values, (err, res)=>{
+            db.query(sql, values, (err, res) => {
                 if (err) throw err;
                 console.log(res.affectedRows);
                 start();
             })
         })
     })
+};
+
+//ADD EMPLOYEE: prompt to enter first name, last name, role, and manager, that employee is added to db
+const rolesArray = [];
+const managerArray = []
+db.query(`SELECT title FROM roles`, (err,res)=>{
+    if (err) throw err
+    res.forEach(title=>{
+         rolesArray.push(title.title)
+         return rolesArray;
+        })
+    });
+
+// db.query()
+
+function addEmployee() {
+    inquirer.prompt([
+        {
+            type:'input',
+            name:'newEmployee',
+            message:'What is the employees firt name?'
+        },
+        {
+            type:'input',
+            name:'newLastName',
+            message:'What is the employees last name?'
+        },
+        {
+            type:'list',
+            name:'newEmployeeRole',
+            message:'What is the employe`s role?',
+            choices: rolesArray,
+        },
+        {
+            type:'list',
+            name:'managerForEmployee',
+            message:'Who is the manager of the employee?',
+            choices: managerArray,
+        },
+        {
+            type:'input',
+            name:'newLastName',
+            message:'What is the employees last name?'
+        },
+    ])
+    .then(answers =>{
+        console.log(answers);
+    })
+
 }
+
 
 start()
