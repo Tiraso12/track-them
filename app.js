@@ -86,7 +86,7 @@ function allEmployees() {
      from employee
      LEFT JOIN role ON role.id = employee.role_id
      LEFT JOIN department on department.id = role.department_id
-     LEFT JOIN employee manager ON manager.manager_id = employee.manager_id;`
+     LEFT JOIN employee manager ON manager.id = employee.manager_id;`
     db.query(sql, (err, res) => {
         if (err) throw err;
         console.log('\n');
@@ -188,10 +188,10 @@ db.query(`SELECT * FROM employee;`, (err, res) => {
         const x = null;
 
         if (v.manager_id == x) {
-            return;
-        } else {
             const manager = v.last_name;
             managerArray.push(manager);
+        } else {
+            return;
         }
     })
 });
@@ -244,7 +244,7 @@ function addEmployee() {
 
                     for (let i = 0; i < response2.length; i++) {
                         if (response2[i].last_name == answers.managerForEmployee) {
-                            manid = response2[i].manager_id;
+                            manid = response2[i].id;
                         }
                     };
 
@@ -253,8 +253,9 @@ function addEmployee() {
                         last_name: answers.newLastName,
                         role_id: roleid,
                         manager_id: manid
-                    }, function (err) {
+                    }, function (err,res) {
                         if (err) throw err;
+                        console.log('NEW EMPLOYEE HAS BEEN ADDED!');
                     });
                     allEmployees();
 
