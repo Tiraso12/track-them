@@ -68,10 +68,10 @@ function allDepartments() {
 };
 //ALL ROLES: job title, role id, the department that role belongs to, and the salary for that role.
 function allRoles() {
-    db.query(`SELECT roles.id, roles.title, roles.salary, department.name
-                                FROM roles
+    db.query(`SELECT role.id, role.title, role.salary, department.name
+                                FROM role
                                 LEFT JOIN department
-                                ON roles.department_id = department.id`, (err, res) => {
+                                ON role.department_id = department.id;`, (err, res) => {
         if (err) throw err;
         console.log('\n');
         console.log('VIEW ALL ROLES');
@@ -82,12 +82,12 @@ function allRoles() {
 };
 //ALL EMPLOYEES: employee ids, first names, last names, job titles, departments, salaries, and managers that the emplyees report to.
 function allEmployees() {
-    const sql = `SELECT employee.id, employee.first_name, employee.last_name, roles.title, roles.salary, department.name 
+    const sql = `SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department,CONCAT()
     FROM employee 
-    LEFT JOIN roles 
-    ON employee.role_id = roles.id
+    LEFT JOIN role 
+    ON employee.role_id = role.id
     LEFT JOIN department
-    ON department.id = roles.department_id;`
+    ON department.id = role.department_id;`
     db.query(sql, (err, res) => {
         if (err) throw err;
         console.log('\n');
@@ -150,8 +150,6 @@ function addRole() {
                 choices: departmentArray
             }
         ]).then(data => {
-            console.log(storeRes);
-            console.log(data);
             let departmentId;
             storeRes.forEach((index) => {
                 if (index.name === data.departmentForRole) {
@@ -164,7 +162,7 @@ function addRole() {
                 department_id: departmentId
             }
 
-            const sql = `INSERT INTO roles SET ?`;
+            const sql = `INSERT INTO role SET ?`;
             db.query(sql, values, (err, res) => {
                 if (err) throw err;
                 console.log(res.affectedRows);
@@ -176,50 +174,94 @@ function addRole() {
 
 //ADD EMPLOYEE: prompt to enter first name, last name, role, and manager, that employee is added to db
 const rolesArray = [];
-const managerArray = []
-db.query(`SELECT title FROM roles`, (err,res)=>{
+const managerArray = [];
+db.query(`SELECT title FROM role`, (err, res) => {
     if (err) throw err
-    res.forEach(title=>{
-         rolesArray.push(title.title)
-         return rolesArray;
-        })
-    });
+    res.forEach(title => {
+        rolesArray.push(title.title)
+        return rolesArray;
+    })
+});
 
-// db.query()
+db.query(`SELECT * FROM employee;`, (err, res) => {
+    if (err) throw err;
+    res.forEach(v => {
+        const x = null;
 
+        if (v.manager_id == x) {
+            return;
+        } else {
+            const manager = v.last_name;
+            managerArray.push(manager);
+        }
+    })
+});
 function addEmployee() {
+    console.log();
     inquirer.prompt([
         {
-            type:'input',
-            name:'newEmployee',
-            message:'What is the employees firt name?'
+            type: 'input',
+            name: 'newEmployee',
+            message: 'What is the employees first name?'
         },
         {
-            type:'input',
-            name:'newLastName',
-            message:'What is the employees last name?'
+            type: 'input',
+            name: 'newLastName',
+            message: 'What is the employees last name?'
         },
         {
-            type:'list',
-            name:'newEmployeeRole',
-            message:'What is the employe`s role?',
+            type: 'list',
+            name: 'newEmployeeRole',
+            message: 'What is the employe`s role?',
             choices: rolesArray,
         },
         {
-            type:'list',
-            name:'managerForEmployee',
-            message:'Who is the manager of the employee?',
+            type: 'list',
+            name: 'managerForEmployee',
+            message: 'Who is the manager of the employee?',
             choices: managerArray,
         },
         {
-            type:'input',
-            name:'newLastName',
-            message:'What is the employees last name?'
+            type: 'input',
+            name: 'newLastName',
+            message: 'What is the employees last name?'
         },
     ])
-    .then(answers =>{
-        console.log(answers);
-    })
+        .then(answers => {
+            console.log(answers);
+            db.query(`SELECT * FROM role;`, (err, response1) => {
+                if (err) throw err;
+
+                db.query(`SELECT * FROM employee;`, (err, response2) => {
+                    if (err) throw err;
+                    let roleid;
+                    let manid;
+
+                    for (let i = 0; i < response1.length; i++) {
+                        if (response1[i].title == answers.newEmployeeRole) {
+                            roleid = response1[i].id;
+                        }
+                    };
+
+                    for (let i = 0; i < response2.length; i++) {
+                        if (response2[i].last_name == answers.managerForEmployee) {
+                            manid = response2[i].manager_id;
+                        }
+                    };
+
+                    db.query(`INSERT INTO employee SET ?`, {
+                        first_name: answers.newEmployee,
+                        last_name: answers.newLastName,
+                        role_id: roleid,
+                        manager_id: manid
+                    }, function (err) {
+                        if (err) throw err;
+                    });
+                    allEmployees();
+
+                })
+            })
+        })
 
 }
 
