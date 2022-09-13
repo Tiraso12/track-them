@@ -82,12 +82,11 @@ function allRoles() {
 };
 //ALL EMPLOYEES: employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to.
 function allEmployees() {
-    const sql = `SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name
-    FROM employee 
-    LEFT JOIN role 
-    ON employee.role_id = role.id
-    LEFT JOIN department
-    ON department.id = role.department_id;`
+    const sql = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name, role.salary, CONCAT(manager.first_name,' ', manager.last_name) AS manager
+     from employee
+     LEFT JOIN role ON role.id = employee.role_id
+     LEFT JOIN department on department.id = role.department_id
+     LEFT JOIN employee manager ON manager.manager_id = employee.manager_id;`
     db.query(sql, (err, res) => {
         if (err) throw err;
         console.log('\n');
