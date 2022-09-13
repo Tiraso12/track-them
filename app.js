@@ -80,9 +80,9 @@ function allRoles() {
     })
     start();
 };
-//ALL EMPLOYEES: employee ids, first names, last names, job titles, departments, salaries, and managers that the emplyees report to.
+//ALL EMPLOYEES: employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to.
 function allEmployees() {
-    const sql = `SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department,CONCAT()
+    const sql = `SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name
     FROM employee 
     LEFT JOIN role 
     ON employee.role_id = role.id
