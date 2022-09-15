@@ -253,16 +253,70 @@ function addEmployee() {
                         last_name: answers.newLastName,
                         role_id: roleid,
                         manager_id: manid
-                    }, function (err,res) {
+                    }, function (err, res) {
                         if (err) throw err;
-                        console.log('NEW EMPLOYEE HAS BEEN ADDED!');
+                        console.log('NEW EMPLOYEE HAS BEEN ADDED!'); c
                     });
-                    allEmployees();
-
+                    
                 })
+                allEmployees();
             })
         })
 
+}
+
+function updateEmployee() {
+    const employeeArray = [];
+    db.query('SELECT * FROM employee;', (err, employeeDb) => {
+        employeeDb.forEach(employee => {
+            // employeeArray.push(employee.first_name + " " + employee.last_name);
+            employeeArray.push(employee.first_name);
+        });
+
+        db.query(`SELECT * FROM role`, (err, role) => {
+
+            inquirer.prompt([
+                {
+                    type: 'list',
+                    name: 'listOfEmployee',
+                    message: 'Select the employee that you want to update',
+                    choices: employeeArray
+                },
+                {
+                    type: 'list',
+                    name: 'newRole',
+                    message: 'what is the new role of the employee?',
+                    choices: rolesArray,
+                }])
+                .then(answers => {
+                    let newRoleid;
+                    role.forEach(role => {
+                        if (answers.newRole === role.title) {
+                            newRoleid = role.id
+                        }
+                    });
+
+                    let mId;
+
+                    employeeDb.forEach(employee=>{
+                        if(employee.first_name === answers.listOfEmployee){
+                            mId = employee.id
+                        }
+                    })
+
+                    const sql = `UPDATE employee SET role_id = ? WHERE employee.id = ?`;
+                    const params = [newRoleid,mId]
+                     db.query(sql, params, (err, res)=>{
+                        if (err) throw err;
+
+                        console.log('Employee"s Role have been updated');
+                     });
+
+                     allEmployees();
+
+                })
+        })
+    })
 }
 
 
