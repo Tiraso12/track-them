@@ -4,6 +4,7 @@ const db = require('./db/connection');
 const inquirer = require('inquirer');
 const cTable = require('console.table');
 const { allDepartments, addDeparment } = require('./lib/department');
+const { allRoles, addRole } = require('./lib/roles');
 
 
 // connects to data base
@@ -30,16 +31,16 @@ const start = answers => {
                     allDepartments().then(()=>{start()});
                     break;
                 case "ALL ROLES":
-                    allRoles();
+                    allRoles().then(()=>{start()});
                     break;
                 case 'ALL EMPLOYEES':
                     allEmployees();
                     break;
                 case 'ADD DEPARTMENT':
-                    addDeparment().then(()=>{allDepartments();start()});;
+                    addDeparment().then(()=>{allDepartments();start()});
                     break;
                 case 'ADD ROLE':
-                    addRole();
+                    addRole().then(()=>{allRoles();start()});
                     break;
                 case 'ADD EMPLOYEE':
                     addEmployee();
@@ -52,20 +53,7 @@ const start = answers => {
         })
 };
 
-//ALL ROLES: job title, role id, the department that role belongs to, and the salary for that role.
-function allRoles() {
-    db.query(`SELECT role.id, role.title, role.salary, department.name
-                                FROM role
-                                LEFT JOIN department
-                                ON role.department_id = department.id;`, (err, res) => {
-        if (err) throw err;
-        console.log('\n');
-        console.log('VIEW ALL ROLES');
-        console.log('======================================================');
-        console.table(res);
-    })
-    start();
-};
+
 //ALL EMPLOYEES: employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to.
 function allEmployees() {
     const sql = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name, role.salary, CONCAT(manager.first_name,' ', manager.last_name) AS manager
@@ -80,58 +68,7 @@ function allEmployees() {
     });
     start();
 };
-//ADD ROLE: prompt to enter name, salary, and deparment for the role and that role is added to db
 
-function addRole() {
-
-    const sql = `SELECT * FROM department`
-    db.query(sql, (err, res) => {
-        if (err) throw err;
-        const departmentArray = []
-        const storeRes = res;
-        console.log(res);
-
-        res.forEach((department) => { departmentArray.push(department.name) });
-
-        inquirer.prompt([
-            {
-                type: 'input',
-                name: 'nameOfRole',
-                message: 'What is the name of the role?'
-            },
-            {
-                type: 'number',
-                name: 'salary',
-                message: 'What is the salary for the role?'
-            },
-            {
-                type: 'list',
-                name: 'departmentForRole',
-                message: 'In what department does the role belong?',
-                choices: departmentArray
-            }
-        ]).then(data => {
-            let departmentId;
-            storeRes.forEach((index) => {
-                if (index.name === data.departmentForRole) {
-                    departmentId = index.id;
-                };
-            })
-            const values = {
-                title: data.nameOfRole,
-                salary: data.salary,
-                department_id: departmentId
-            }
-
-            const sql = `INSERT INTO role SET ?`;
-            db.query(sql, values, (err, res) => {
-                if (err) throw err;
-                console.log(res.affectedRows);
-                start();
-            })
-        })
-    })
-};
 
 //ADD EMPLOYEE: prompt to enter first name, last name, role, and manager, that employee is added to db
 const rolesArray = [];
