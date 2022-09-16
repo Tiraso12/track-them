@@ -1,13 +1,10 @@
-
-
-
-
 //UPDATE AN EMPLOYEE ROLE: prompt to select an employee to update their new role and this information is updated in the db
-
 const sql = require('mysql2');
 const db = require('./db/connection');
 const inquirer = require('inquirer');
 const cTable = require('console.table');
+const { allDepartments, addDeparment } = require('./lib/department');
+
 
 // connects to data base
 db.connect(err => {
@@ -30,7 +27,7 @@ const start = answers => {
             console.log(answers.options);
             switch (answers.options) {
                 case "ALL DEPARTMENTS":
-                    allDepartments();
+                    allDepartments().then(()=>{start()});
                     break;
                 case "ALL ROLES":
                     allRoles();
@@ -39,7 +36,7 @@ const start = answers => {
                     allEmployees();
                     break;
                 case 'ADD DEPARTMENT':
-                    addDeparment();
+                    addDeparment().then(()=>{allDepartments();start()});;
                     break;
                 case 'ADD ROLE':
                     addRole();
@@ -55,17 +52,6 @@ const start = answers => {
         })
 };
 
-//ALL DEPARTMENTS : department names, and department ids
-function allDepartments() {
-    db.query(`SELECT * FROM department`, (err, res) => {
-        if (err) throw err;
-        console.log('\n');
-        console.log('VIEW ALL DEPARTMENTS');
-        console.log('======================================================');
-        console.table(res);
-    });
-    start();
-};
 //ALL ROLES: job title, role id, the department that role belongs to, and the salary for that role.
 function allRoles() {
     db.query(`SELECT role.id, role.title, role.salary, department.name
@@ -94,30 +80,6 @@ function allEmployees() {
     });
     start();
 };
-//ADD DEPARTMENT: prompt to enter name of department, then department is added to db.
-function addDeparment() {
-    inquirer.prompt([
-        {
-            type: 'input',
-            name: 'depName',
-            message: 'What is the name of the deparment?',
-        },
-    ])
-        .then(answers => {
-
-            const insert = "INSERT INTO department(name) VALUES ?";
-            const value = [[answers.depName]];
-
-
-            db.query(insert, [value], (err, res) => {
-                if (err) throw err;
-                console.log(res);
-                allDepartments();
-            })
-        });
-
-};
-
 //ADD ROLE: prompt to enter name, salary, and deparment for the role and that role is added to db
 
 function addRole() {
@@ -320,4 +282,6 @@ function updateEmployee() {
 }
 
 
-start()
+start();
+
+module.exports = {start};
