@@ -7,7 +7,9 @@
 
 ## Description
     
-This project was design to manage a employee database, keeping track of salaries, departments and employees, and being able to add or delete any of those as well
+This project was design to manage a employee database, keeping track of salaries, departments and employees, and being able to add or delete any of those as well.
+
+[link to the aplication here!](https://www.youtube.com/watch?v=Dv3PZZK-9_g&t=34s)
  
 ## Table of Content
 - [Installation](#installation)
