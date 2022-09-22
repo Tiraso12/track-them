@@ -13,19 +13,19 @@ const start = answers => {
             type: 'list',
             name: 'options',
             message: 'select an option',
-            choices: ['ALL DEPARTMENTS', 'ALL ROLES', 'ALL EMPLOYEES', 'ADD DEPARTMENT', 'ADD ROLE', 'ADD EMPLOYEE', 'UPDATE EMPLOYEE ROLE', 'DELETE EMPLOYEE']
+            choices: ['SHOW DEPARTMENTS', 'SHOW ROLES', 'SHOW EMPLOYEES', 'ADD DEPARTMENT', 'ADD ROLE', 'ADD EMPLOYEE', 'UPDATE EMPLOYEE`S ROLE', 'DELETE EMPLOYEE']
         },
     ])
         .then(answers => {
             console.log(answers.options);
             switch (answers.options) {
-                case "ALL DEPARTMENTS":
+                case "SHOW DEPARTMENTS":
                     allDepartments().then(() => { start() });
                     break;
-                case "ALL ROLES":
+                case "SHOW ROLES":
                     allRoles().then(() => { start() });
                     break;
-                case 'ALL EMPLOYEES':
+                case 'SHOW EMPLOYEES':
                     allEmployees().then(() => { start() });
                     break;
                 case 'ADD DEPARTMENT':
@@ -37,7 +37,7 @@ const start = answers => {
                 case 'ADD EMPLOYEE':
                     addEmployee().then(() => { allEmployees(); start() });
                     break;
-                case 'UPDATE EMPLOYEE ROLE':
+                case 'UPDATE EMPLOYEE`S ROLE':
                     updateEmployee().then(() => { allEmployees(); start() });
                     break;
                 case 'DELETE EMPLOYEE':
